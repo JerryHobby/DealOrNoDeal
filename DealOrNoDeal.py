@@ -1,7 +1,7 @@
+#!/Library/Frameworks/Python.framework/Versions/3.4/bin/python3
+#
 # DealOrNoDeal.py
 #
-# Randomize all values into cases
-# Choose a case for player - from 1 - 26 - mark inplay-False
 #
 # round 1: 6 turns - mark inplay false
 # calculate offer/board
@@ -34,618 +34,153 @@
 # display high score 
 # write score to file if new high score
 
+######################################################################
+######################################################################
 
-Values = [ 0.01, 1, 5, 10, 25, 50, 75, 100, 200, 300, 400, 500, 750
-1000, 5000, 10000, 25000, 50000, 75000, 100000, 200000, 300000, 400000, 500000, 750000, 1000000]
+from random import shuffle
+
+
+Values = [ 0.01, 1, 5, 10, 25, 50, 75, 100, 200, 300, 400, 500, 750,
+1000, 5000, 10000, 25000, 50000, 75000, 100000, 200000, 300000, 
+400000, 500000, 750000, 1000000]
 
 # 26 Cases total 
-# randomize values into cases
+Cases = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
 
-Case[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-InPlay[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+Prizes = []
 
-Taunts[]
-prompts[]
+
+# 10 turns maximum
+
+
+#Taunts[]
+#prompts[]
 
 Rounds = [ 6,5,4,3,2,1,1,1,1,1 ]
 
-choose case
-open 6 cases - 5, 25, 750, 10,000, 200,000, 400,000
+class Prize:
 
-offer - 30,000
+	def __init__(self, NewValue, NewCase):
+		self.Value = NewValue
+		self.Active = True
+		self.Case = NewCase 
 
-open 5 cases
+		# converts Value to fixed-width space-padded string with commas
+		self.TextValue = "{: >11s}".format("{:,}".format(self.Value))
 
-500,000, 5,000, 25,000, 400, 75
+		# print(self.Case, self.Value)
 
-offer - 62,000
+	def Play(self):
+		self.Active = False
+		self.TextValue = "***********"
 
-open 4 cases
 
-300,000, 100, 10, 100,000
 
-offer - 86,000
 
-open 3 cases
+def PrintBoard():
 
-500, 50,000, 300
+	print("\n")
+	print("|---------------------------|")
+	print("|----  DEAL OR NO DEAL  ----|")
+	print("|---------------------------|")
 
-offer - 141,000
+	for x in range(0,int(len(Prizes)/2)):
+		print("| {} | {} |".format( 
+		Prizes[x].TextValue, Prizes[x+13].TextValue ))
 
-open 2 cases
+	print("|---------------------------|")
+	print("\n")
 
-750,000, 1,000,000
+	Remaining = []
 
-offer - 9,000
+	for x in range(0,len(Prizes)):
+		if(Prizes[x].Active):
+			Remaining.append(Prizes[x].Case)
 
-open 1 case
 
-.01
+	Remaining = sorted(Remaining)
 
-offer - 15,000
+	for s in Remaining:
+		print("{} ".format(str(s)), end="")
 
-### offer calculation
-1 in 5/1
-1 in 5/50
-1 in 5/200
-1 in 5/1000
-1 in 5/75000
+	print("\n")
 
-20% of sum of all values = offer
-round to nearest 1000.
+	print("Bank Offer: {:,}".format(BankOffer()))
 
+	print("\n\n")
 
-open 1 case
 
-200
 
-offer - 21000
+def OpenCase(Choice):
 
-open 1 case
+	# find Case in Prizes
 
-50
+	for x in range(0, len(Prizes)):
+		if(Prizes[x].Case == int(Choice)):
+			Prizes[x].Play()
+			break
 
-offer - 27000   (1 in 4 / 75000)
+	#Prizes[6].Play()
 
-open 1 case
 
-75000
+def BankOffer():
 
-offer - 500
+	Total = 0
+	Cnt = 0
+	Offer = 0
 
-2 cases left --- 
-open player's case
-$1000 
-75000
+	# add up all remaining prizes
+	# and divide by how many cases remain
 
-offer - 500
+	for x in range(0, len(Prizes)):
+		if(Prizes[x].Active):
+			Total = Total + Prizes[x].Value
+			Cnt = Cnt + 1
 
-2 cases left --- 
-open player's case
-$1000 
-75000
+	if(Total > 0 and Cnt > 0):
+		Offer = int(Total / Cnt)
+	else:
+		Offer = 0
 
-offer - 500
+	# round off the offer 
 
-2 cases left --- 
-open player's case
-$1000 
-75000
+	if(Offer > 1000):
+		Offer = int(Offer / 1000) * 1000
+	elif(Offer > 500):
+		Offer = int(Offer / 100) * 100
+	elif(Offer > 100):
+		Offer = int(Offer / 10) * 10
 
-offer - 500
+	return(Offer)
 
-2 cases left --- 
-open player's case
-$1000 
-75000
 
-offer - 500
 
-2 cases left --- 
-open player's case
-$1000 
-75000
+def main():
+	# randomize cases
+	# and crate list of cases
 
-offer - 500
+	shuffle(Cases)
 
-2 cases left --- 
-open player's case
-$1000 
-75000
+	for x in range(0,len(Values)):
+		Prizes.append(Prize(Values[x], Cases[x]))
 
-offer - 500
 
-2 cases left --- 
-open player's case
-$1000 
-75000
+	#### LOOP ####
 
-offer - 500
+	Choice = ""
 
-2 cases left --- 
-open player's case
-$1000 
-75000
+	while(Choice != "q"):
+		PrintBoard()
 
-offer - 500
+		print("Choose a case: ", end="")
+		Choice = input()
 
-2 cases left --- 
-open player's case
-$1000 
-75000
+		if(Choice.isdigit()):
+			OpenCase(Choice)
 
-offer - 500
 
-2 cases left --- 
-open player's case
-$1000 
-75000
 
-offer - 500
 
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-75000
-
-offer - 500
-
-2 cases left --- 
-open player's case
-$1000 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+###################################################################
+main()
