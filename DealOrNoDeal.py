@@ -48,16 +48,21 @@ Values = [ 0.01, 1, 5, 10, 25, 50, 75, 100, 200, 300, 400, 500, 750,
 Cases = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
 
+Rounds = [ 6,5,4,3,2,1,1,1,1,1 ]
+
 Prizes = []
+
+MyCase = 0
+
+
+
+
 
 
 # 10 turns maximum
 
-
 #Taunts[]
 #prompts[]
-
-Rounds = [ 6,5,4,3,2,1,1,1,1,1 ]
 
 class Prize:
 
@@ -90,7 +95,6 @@ def PrintBoard():
 		Prizes[x].TextValue, Prizes[x+13].TextValue ))
 
 	print("|---------------------------|")
-	print("\n")
 
 	Remaining = []
 
@@ -101,14 +105,17 @@ def PrintBoard():
 
 	Remaining = sorted(Remaining)
 
+	print("Remaining cases")
+
 	for s in Remaining:
-		print("{} ".format(str(s)), end="")
+		if(s != MyCase):
+			print("{} ".format(str(s)), end="")
 
 	print("\n")
 
 	print("Bank Offer: {:,}".format(BankOffer()))
 
-	print("\n\n")
+	print("\n")
 
 
 
@@ -121,7 +128,40 @@ def OpenCase(Choice):
 			Prizes[x].Play()
 			break
 
-	#Prizes[6].Play()
+
+
+
+
+def ChooseCase():
+
+	global MyCase
+
+	print("""
+
+Welcome to DEAL OR NO DEAL
+
+There are 26 cases numbered 1 through 26.
+Each case has a cash prize inside ranging 
+from a penny to one million dollars.  They
+are in random order. 
+
+Which case do you believe is the case with
+one million dollars?""")
+
+
+	while(MyCase<1 or MyCase>26):
+	
+		print("Choose your lucky case number (1 - 26):", end="")
+		s = input()
+		if(not s.isdigit()):
+			MyCase = 0
+		MyCase = int(s)
+
+	print("""
+Wonderful! Your case is {}. Let's hope you 
+have the one million dollars in your case.""".format(MyCase))
+	
+	return()
 
 
 def BankOffer():
@@ -166,14 +206,24 @@ def main():
 		Prizes.append(Prize(Values[x], Cases[x]))
 
 
+	ChooseCase()
+
 	#### LOOP ####
 
 	Choice = ""
 
 	while(Choice != "q"):
+
+
+		# outer loop - until the game is over
+			# inner loop - choose 6,5,4,3,2,1 cases
+			# - input/print board
+		# print bank offer/deal or no deal
+
+
 		PrintBoard()
 
-		print("Choose a case: ", end="")
+		print("Choose a case to open: ", end="")
 		Choice = input()
 
 		if(Choice.isdigit()):
