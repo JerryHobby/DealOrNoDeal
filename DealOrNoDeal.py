@@ -54,6 +54,10 @@ Prizes = []
 
 MyCase = 0
 
+RecalcOffer = True
+
+# Ten historical offers - formatted as strings
+Offer = ['','','','','','','','','','','','','']
 
 
 
@@ -83,7 +87,7 @@ class Prize:
 
 
 
-def PrintBoard():
+def PrintBoard(ShowOffers):
 
 	print("\n")
 	print("|---------------------------|")
@@ -92,9 +96,18 @@ def PrintBoard():
 
 	for x in range(0,int(len(Prizes)/2)):
 		print("| {} | {} |".format( 
-		Prizes[x].TextValue, Prizes[x+13].TextValue ))
+		Prizes[x].TextValue, Prizes[x+13].TextValue), end="")
 
-	print("|---------------------------|")
+		if(len(Offer[x]) and ShowOffers):
+			print(" Previous Offer:", Offer[x])
+		else:
+			print("")
+
+	print("|---------------------------|", end="")
+	if(ShowOffers):
+		print(" Bank Offer: {:,}".format(BankOffer()))
+	else:
+		print("\n")
 
 	Remaining = []
 
@@ -111,9 +124,6 @@ def PrintBoard():
 		if(s != MyCase):
 			print("{} ".format(str(s)), end="")
 
-	print("\n")
-
-	print("Bank Offer: {:,}".format(BankOffer()))
 
 	print("\n")
 
@@ -121,10 +131,13 @@ def PrintBoard():
 
 def OpenCase(Choice):
 
+	global RecalcOffer
+
 	# find Case in Prizes
 
 	for x in range(0, len(Prizes)):
-		if(Prizes[x].Case == int(Choice)):
+		if(Prizes[x].Case == int(Choice) and int(Choice) != MyCase):
+			RecalcOffer = True
 			Prizes[x].Play()
 			break
 
@@ -168,7 +181,9 @@ def BankOffer():
 
 	Total = 0
 	Cnt = 0
-	Offer = 0
+	NewOffer = 0
+	global Offer
+	global RecalcOffer
 
 	# add up all remaining prizes
 	# and divide by how many cases remain
@@ -179,20 +194,30 @@ def BankOffer():
 			Cnt = Cnt + 1
 
 	if(Total > 0 and Cnt > 0):
-		Offer = int(Total / Cnt)
+		NewOffer = int(Total / Cnt)
 	else:
-		Offer = 0
+		NewOffer = 0
 
 	# round off the offer 
 
-	if(Offer > 1000):
-		Offer = int(Offer / 1000) * 1000
-	elif(Offer > 500):
-		Offer = int(Offer / 100) * 100
-	elif(Offer > 100):
-		Offer = int(Offer / 10) * 10
+	if(NewOffer > 1000):
+		NewOffer = int(NewOffer / 1000) * 1000
+	elif(NewOffer > 500):
+		NewOffer = int(NewOffer / 100) * 100
+	elif(NewOffer > 100):
+		NewOffer = int(NewOffer / 10) * 10
 
-	return(Offer)
+
+	if(RecalcOffer):
+		RecalcOffer = False
+		print("New Offer", end="")
+
+		for x in range(0,10):
+			if(Offer[x]==''):
+				Offer[x] = "${:,}".format(NewOffer)
+				break;
+
+	return(NewOffer)
 
 
 
@@ -221,7 +246,7 @@ def main():
 		# print bank offer/deal or no deal
 
 
-		PrintBoard()
+		PrintBoard(True)
 
 		print("Choose a case to open: ", end="")
 		Choice = input()
