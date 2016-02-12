@@ -45,10 +45,10 @@ Values = [ 0.01, 1, 5, 10, 25, 50, 75, 100, 200, 300, 400, 500, 750,
 400000, 500000, 750000, 1000000]
 
 # 26 Cases total 
-Cases = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+Cases = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
 
-Rounds = [ 6,5,4,3,2,1,1,1,1,1 ]
+Rounds = [6, 5, 4, 3, 2, 1, 1, 1, 1, 1]
 
 Prizes = []
 
@@ -57,16 +57,13 @@ MyCase = 0
 RecalcOffer = True
 
 # Ten historical offers - formatted as strings
-Offer = ['','','','','','','','','','','','','']
-
-
-
-
+Offer = ['', '', '', '', '', '', '', '', '', '', '', '', '']
 
 # 10 turns maximum
 
-#Taunts[]
-#prompts[]
+# Taunts[]
+# prompts[]
+
 
 class Prize:
 
@@ -85,8 +82,6 @@ class Prize:
 		self.TextValue = "***********"
 
 
-
-
 def PrintBoard(ShowOffers):
 
 	print("\n")
@@ -94,9 +89,8 @@ def PrintBoard(ShowOffers):
 	print("|----  DEAL OR NO DEAL  ----|")
 	print("|---------------------------|")
 
-	for x in range(0,int(len(Prizes)/2)):
-		print("| {} | {} |".format( 
-		Prizes[x].TextValue, Prizes[x+13].TextValue), end="")
+	for x in range(0, int(len(Prizes)/2)):
+		print("| {} | {} |".format(Prizes[x].TextValue, Prizes[x+13].TextValue), end="")
 
 		if(len(Offer[x]) and ShowOffers):
 			print(" Previous Offer:", Offer[x])
@@ -111,10 +105,9 @@ def PrintBoard(ShowOffers):
 
 	Remaining = []
 
-	for x in range(0,len(Prizes)):
+	for x in range(0, len(Prizes)):
 		if(Prizes[x].Active):
 			Remaining.append(Prizes[x].Case)
-
 
 	Remaining = sorted(Remaining)
 
@@ -124,9 +117,7 @@ def PrintBoard(ShowOffers):
 		if(s != MyCase):
 			print("{} ".format(str(s)), end="")
 
-
 	print("\n")
-
 
 
 def OpenCase(Choice):
@@ -140,9 +131,6 @@ def OpenCase(Choice):
 			RecalcOffer = True
 			Prizes[x].Play()
 			break
-
-
-
 
 
 def ChooseCase():
@@ -161,8 +149,7 @@ are in random order.
 Which case do you believe is the case with
 one million dollars?""")
 
-
-	while(MyCase<1 or MyCase>26):
+	while(MyCase < 1 or MyCase > 26):
 	
 		print("Choose your lucky case number (1 - 26):", end="")
 		s = input()
@@ -207,18 +194,16 @@ def BankOffer():
 	elif(NewOffer > 100):
 		NewOffer = int(NewOffer / 10) * 10
 
-
 	if(RecalcOffer):
 		RecalcOffer = False
 		print("New Offer", end="")
 
-		for x in range(0,10):
-			if(Offer[x]==''):
+		for x in range(0, 10):
+			if(Offer[x] == ''):
 				Offer[x] = "${:,}".format(NewOffer)
-				break;
+				break
 
 	return(NewOffer)
-
 
 
 def main():
@@ -227,9 +212,8 @@ def main():
 
 	shuffle(Cases)
 
-	for x in range(0,len(Values)):
+	for x in range(0, len(Values)):
 		Prizes.append(Prize(Values[x], Cases[x]))
-
 
 	ChooseCase()
 
@@ -239,12 +223,10 @@ def main():
 
 	while(Choice != "q"):
 
-
 		# outer loop - until the game is over
 			# inner loop - choose 6,5,4,3,2,1 cases
 			# - input/print board
 		# print bank offer/deal or no deal
-
 
 		PrintBoard(True)
 
@@ -254,8 +236,6 @@ def main():
 		if(Choice.isdigit()):
 			OpenCase(Choice)
 
-
-
-
 ###################################################################
+
 main()
